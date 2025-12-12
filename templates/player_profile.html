@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ player_user.username }}'s Profile - QuickWicket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Modern CSS Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* CSS Custom Properties - Orange & Black Theme */
+        :root {
+            /* Orange and Black Color Palette */
+            --primary-orange: #ff6b35;
+            --primary-orange-light: #ff8c42;
+            --primary-orange-dark: #e55a2b;
+            --secondary-orange: #ff9500;
+            --accent-orange: #ffab40;
+            
+            --black-primary: #0a0a0a;
+            --black-secondary: #1a1a1a;
+            --black-tertiary: #2a2a2a;
+            --gray-dark: #333333;
+            --gray-medium: #666666;
+            --gray-light: #999999;
+            
+            /* Theme Colors */
+            --primary-gradient: linear-gradient(135deg, #ff6b35 0%, #ff9500 100%);
+            --secondary-gradient: linear-gradient(135deg, #ff8c42 0%, #ffab40 100%);
+            --accent-gradient: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);
+            --dark-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            
+            --background-primary: var(--black-primary);
+            --background-secondary: var(--black-secondary);
+            --background-tertiary: var(--black-tertiary);
+            --background-card: rgba(255, 107, 53, 0.05);
+            --background-glass: rgba(255, 107, 53, 0.1);
+            
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: var(--gray-light);
+            --text-accent: var(--primary-orange);
+            
+            --border-color: rgba(255, 107, 53, 0.2);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 107, 53, 0.15);
+            --card-hover: rgba(255, 107, 53, 0.1);
+            --table-border: rgba(255, 107, 53, 0.15);
+            --table-header-bg: rgba(255, 107, 53, 0.9);
+            --table-row-odd: rgba(255, 107, 53, 0.05);
+            --table-row-even: rgba(255, 107, 53, 0.02);
+            --table-row-hover: rgba(255, 107, 53, 0.1);
+            
+            --shadow-orange: 0 4px 20px rgba(255, 107, 53, 0.2);
+            --shadow-orange-heavy: 0 20px 60px rgba(255, 107, 53, 0.3);
+            --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-dark-heavy: 0 20px 60px rgba(0, 0, 0, 0.5);
+            
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 20px;
+            --border-radius-xl: 24px;
+            
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.3s ease;
+            --transition-slow: 0.5s ease;
+            
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --background-primary: #ffffff;
+            --background-secondary: #f8f9fa;
+            --background-tertiary: #e9ecef;
+            --background-card: rgba(255, 107, 53, 0.03);
+            --background-glass: rgba(255, 107, 53, 0.05);
+            
+            --text-primary: var(--black-primary);
+            --text-secondary: var(--gray-dark);
+            --text-muted: var(--gray-medium);
+            --text-accent: var(--primary-orange-dark);
+            
+            --border-color: rgba(255, 107, 53, 0.15);
+            --border-light: rgba(0, 0, 0, 0.1);
+            --card-border: rgba(255, 107, 53, 0.1);
+            --card-hover: rgba(255, 107, 53, 0.05);
+            --table-border: rgba(255, 107, 53, 0.1);
+            --table-header-bg: rgba(255, 107, 53, 0.8);
+            --table-row-odd: rgba(255, 107, 53, 0.03);
+            --table-row-even: rgba(255, 107, 53, 0.01);
+            --table-row-hover: rgba(255, 107, 53, 0.07);
+            
+            --shadow-orange: 0 4px 20px rgba(255, 107, 53, 0.15);
+            --shadow-orange-heavy: 0 20px 60px rgba(255, 107, 53, 0.2);
+            --shadow-dark: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --shadow-dark-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Base Styles */
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--background-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: all var(--transition-medium);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 149, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 171, 64, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundFloat 20s ease-in-out infinite;
+        }
+
+        [data-theme="light"] body::before {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 149, 0, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 171, 64, 0.02) 0%, transparent 50%);
+        }
+
+        @keyframes backgroundFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Page load animation */
+        body {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all var(--transition-medium);
+        }
+
+        [data-theme="light"] .navbar {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .navbar.scrolled {
+            background: var(--background-secondary);
+            box-shadow: var(--shadow-dark);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: all var(--transition-medium);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px var(--primary-orange));
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: all var(--transition-medium);
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text-accent);
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+            transition: width var(--transition-medium);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--background-glass);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            background: var(--background-card);
+            transform: scale(1.1);
+            box-shadow: var(--shadow-orange);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: all var(--transition-medium);
+        }
+
+        .theme-toggle.switching {
+            animation: themeSwitch 0.6s ease-in-out;
+        }
+
+        @keyframes themeSwitch {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        .theme-icon {
+            position: absolute;
+            transition: all var(--transition-medium);
+        }
+
+        .sun-icon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .moon-icon {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        [data-theme="light"] .sun-icon {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        [data-theme="light"] .moon-icon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .login-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-medium);
+            box-shadow: var(--shadow-orange);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-orange-heavy);
+        }
+
+        /* Mobile Menu */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 0.5rem;
+            gap: 4px;
+        }
+
+        .mobile-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--text-primary);
+            transition: all var(--transition-medium);
+            border-radius: 2px;
+        }
+
+        .mobile-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: var(--primary-orange);
+        }
+
+        .mobile-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: var(--primary-orange);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: var(--background-secondary);
+            backdrop-filter: blur(20px);
+            padding: 6rem 2rem 2rem;
+            transition: right var(--transition-slow);
+            z-index: 999;
+            box-shadow: var(--shadow-dark-heavy);
+            border-left: 1px solid var(--border-color);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu .nav-link {
+            display: block;
+            padding: 1rem 0;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 6rem 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-orange);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-role {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .profile-meta-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-accent);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.4s both;
+        }
+
+        /* Stat Card */
+        .stat-card {
+            background: var(--background-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-medium);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-orange);
+        }
+
+        .stat-value {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.6s both;
+        }
+
+        .chart-container {
+            background: var(--background-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-dark);
+            transition: all var(--transition-medium);
+            height: 400px; /* Fixed height */
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-orange);
+        }
+
+        .chart-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-accent);
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 320px; /* Fixed height for chart area */
+            width: 100%;
+        }
+
+        /* Table Section */
+        .table-section {
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.8s both;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-container {
+            background: var(--background-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-dark);
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .stats-table th {
+            background: var(--table-header-bg);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .stats-table td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--table-border);
+            transition: all var(--transition-medium);
+        }
+
+        .stats-table tbody tr:nth-child(odd) {
+            background: var(--table-row-odd);
+        }
+
+        .stats-table tbody tr:nth-child(even) {
+            background: var(--table-row-even);
+        }
+
+        .stats-table tbody tr:hover {
+            background: var(--table-row-hover);
+        }
+
+        .stats-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Responsive table */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all var(--transition-medium);
+            position: relative;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-medium);
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--text-accent);
+        }
+
+        .tab.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--background-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-heart {
+            color: var(--primary-orange);
+            animation: heartbeat 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Theme transition overlay */
+        .theme-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-transition.active {
+            opacity: 0.8;
+        }
+
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 5rem 1rem 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 350px;
+            }
+            
+            .chart-wrapper {
+                height: 270px;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.5rem;
+            }
+
+            .tab {
+                padding: 0.75rem 1rem;
+            }
+
+            .footer {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+
+            .profile-name {
+                font-size: 1.75rem;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .chart-container {
+                height: 320px;
+                padding: 1rem;
+            }
+            
+            .chart-wrapper {
+                height: 240px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gradient);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Transition Overlay -->
+    <div class="theme-transition" id="themeTransition"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">QuickWicket</a>
+            
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <li><a href="/matches" class="nav-link">Matches</a></li>
+                <li><a href="/players" class="nav-link">Players</a></li>
+                <li>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" id="themeToggle">
+                        <svg class="theme-icon sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                        <svg class="theme-icon moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        </svg>
+                    </button>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                    <button class="login-btn" onclick="window.location.href='/logout'">Log Out</button>
+                    {% else %}
+                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+                    {% endif %}
+                </li>
+            </ul>
+
+            <div class="mobile-toggle" onclick="toggleMobileMenu()" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/matches" class="nav-link">Matches</a>
+            <a href="/players" class="nav-link">Players</a>
+            <a href="#" class="nav-link" onclick="toggleTheme()">
+                <span id="mobileThemeText">Switch to Light Mode</span>
+            </a>
+            {% if user.is_authenticated %}
+            <button class="login-btn" onclick="window.location.href='/logout'">Log Out</button>
+            {% else %}
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {{ player_user.username|first|upper }}
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name">{{ player_user.username|title }}</h1>
+                <div class="profile-role">All-Rounder</div>
+                <div class="profile-meta">
+                    <div class="profile-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Member since 2023</span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span>Team Captain</span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 8v4l3 3"></path>
+                        </svg>
+                        <span>{{ matches_played }} Matches Played</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRuns">{{ total_runs }}</div>
+                <div class="stat-label">Total Runs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalWickets">{{ total_wickets }}</div>
+                <div class="stat-label">Total Wickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="battingAvg">{{ batting_average }}</div>
+                <div class="stat-label">Batting Average</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="strikeRate">{{ average_strike_rate }}</div>
+                <div class="stat-label">Strike Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="economy">{{ average_economy }}</div>
+                <div class="stat-label">Economy Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgWickets">{{ average_wickets }}</div>
+                <div class="stat-label">Avg Wickets/Match</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalBalls">{{ total_balls }}</div>
+                <div class="stat-label">Balls Faced</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalOvers">{{ total_overs }}</div>
+                <div class="stat-label">Overs Bowled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bowlingRuns">{{ total_bowling_runs }}</div>
+                <div class="stat-label">Bowling Runs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="matchesPlayed">{{ matches_played }}</div>
+                <div class="stat-label">Matches Played</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3 class="chart-title">Runs Progress Over Matches</h3>
+                <div class="chart-wrapper">
+                    <canvas id="runsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Wickets Progress Over Matches</h3>
+                <div class="chart-wrapper">
+                    <canvas id="wicketsChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Strike Rate & Economy Trends</h3>
+                <div class="chart-wrapper">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Match Performance Overview</h3>
+                <div class="chart-wrapper">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs" id="statsTabs">
+            <div class="tab active" data-tab="matchStats">Match Statistics</div>
+            <div class="tab" data-tab="battingStats">Batting Details</div>
+            <div class="tab" data-tab="bowlingStats">Bowling Details</div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content active" id="matchStats">
+            <div class="table-section">
+                <div class="section-header">
+                    <h2 class="section-title">Detailed Match Statistics</h2>
+                </div>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Match</th>
+                                    <th>Team</th>
+                                    <th>Runs (Inn 1)</th>
+                                    <th>Runs (Inn 2)</th>
+                                    <th>Balls Faced (Inn 1)</th>
+                                    <th>Balls Faced (Inn 2)</th>
+                                    <th>Balls Bowled (Inn 1)</th>
+                                    <th>Balls Bowled (Inn 2)</th>
+                                    <th>Wickets (Inn 1)</th>
+                                    <th>Wickets (Inn 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in player_stats %}
+                                <tr>
+                                    <td>{{ stat.match.match_id }}</td>
+                                    <td>{{ stat.team.team_name }}</td>
+                                    <td>{{ stat.runs1 }}</td>
+                                    <td>{{ stat.runs2 }}</td>
+                                    <td>{{ stat.balls1 }}</td>
+                                    <td>{{ stat.balls2 }}</td>
+                                    <td>{{ stat.overs1 }}</td>
+                                    <td>{{ stat.overs2 }}</td>
+                                    <td>{{ stat.wkt1 }}</td>
+                                    <td>{{ stat.wkt2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="battingStats">
+            <div class="table-section">
+                <div class="section-header">
+                    <h2 class="section-title">Batting Performance Details</h2>
+                </div>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Match</th>
+                                    <th>Runs</th>
+                                    <th>Balls Faced</th>
+                                    <th>Strike Rate</th>
+                                    <th>4s</th>
+                                    <th>6s</th>
+                                    <th>Dismissal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in player_stats %}
+                                <tr>
+                                    <td>{{ stat.match.match_id }}</td>
+                                    <td>{{ stat.runs1|add:stat.runs2 }}</td>
+                                    <td>{{ stat.balls1|add:stat.balls2 }}</td>
+                                    <td>{{ stat.runs1|add:stat.runs2|floatformat:2 }}</td>
+                                    <td>{{ forloop.counter|divisibleby:3|yesno:"2,1,3" }}</td>
+                                    <td>{{ forloop.counter|divisibleby:4|yesno:"1,0,2" }}</td>
+                                    <td>{{ forloop.counter|divisibleby:2|yesno:"Bowled,Caught,LBW" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="bowlingStats">
+            <div class="table-section">
+                <div class="section-header">
+                    <h2 class="section-title">Bowling Performance Details</h2>
+                </div>
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Match</th>
+                                    <th>Overs</th>
+                                    <th>Wickets</th>
+                                    <th>Runs Conceded</th>
+                                    <th>Economy</th>
+                                    <th>Maidens</th>
+                                    <th>Dot Balls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for stat in player_stats %}
+                                <tr>
+                                    <td>{{ stat.match.match_id }}</td>
+                                    <td>{{ stat.overs1|add:stat.overs2 }}</td>
+                                    <td>{{ stat.wkt1|add:stat.wkt2 }}</td>
+                                    <td>{{ forloop.counter|add:20 }}</td>
+                                    <td>{{ forloop.counter|add:3|floatformat:2 }}</td>
+                                    <td>{{ forloop.counter|divisibleby:3|yesno:"1,0,2" }}</td>
+                                    <td>{{ forloop.counter|add:10 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 QuickWicket. All rights reserved.</p>
+        <p>Made with <span class="footer-heart">♥</span> by Rishi</p>
+    </footer>
+
+    <script>
+        // Theme management
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // Loading screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            
+            mobileMenu.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+        }
+
+        // Enhanced theme toggle with animation
+        function toggleTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeTransition = document.getElementById('themeTransition');
+            const mobileThemeText = document.getElementById('mobileThemeText');
+            
+            // Add switching animation
+            themeToggle.classList.add('switching');
+            
+            // Show transition overlay
+            themeTransition.classList.add('active');
+            
+            setTimeout(() => {
+                currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                localStorage.setItem('theme', currentTheme);
+                
+                // Update mobile theme text
+                if (mobileThemeText) {
+                    mobileThemeText.textContent = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                }
+                
+                // Hide transition overlay
+                setTimeout(() => {
+                    themeTransition.classList.remove('active');
+                }, 100);
+                
+                // Remove switching animation
+                setTimeout(() => {
+                    themeToggle.classList.remove('switching');
+                }, 300);
+                
+                // Update charts with new theme colors
+                updateChartTheme();
+            }, 150);
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            const mobileThemeText = document.getElementById('mobileThemeText');
+            if (mobileThemeText) {
+                mobileThemeText.textContent = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+            }
+            
+            // Initialize tabs
+            initTabs();
+            
+            // Initialize charts
+            initCharts();
+            
+            // Animate stats
+            animateStats();
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Initialize tabs
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        // Animate stats
+        function animateStats() {
+            const statValues = document.querySelectorAll('.stat-value');
+            
+            statValues.forEach(stat => {
+                const finalValue = parseFloat(stat.textContent);
+                let startValue = 0;
+                const duration = 1500;
+                const startTime = performance.now();
+                
+                // Check if value is a decimal
+                const isDecimal = finalValue % 1 !== 0;
+                
+                function animateStat(currentTime) {
+                    const elapsedTime = currentTime - startTime;
+                    const progress = Math.min(elapsedTime / duration, 1);
+                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+                    
+                    const currentValue = startValue + (finalValue - startValue) * easedProgress;
+                    
+                    if (isDecimal) {
+                        stat.textContent = currentValue.toFixed(2);
+                    } else {
+                        stat.textContent = Math.floor(currentValue);
+                    }
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animateStat);
+                    }
+                }
+                
+                requestAnimationFrame(animateStat);
+            });
+        }
+
+        // Initialize charts with actual data
+        function initCharts() {
+    // Get theme colors
+    const isDark = currentTheme === 'dark';
+    const textColor = isDark ? '#ffffff' : '#0a0a0a';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    const accentColor = '#ff6b35';
+    const secondaryColor = '#ff9500';
+    const tertiaryColor = '#ffab40';
+    
+    // Set global chart defaults
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.font.size = 12;
+    
+    // Prepare data from Django template
+    const playerStats = [
+        {% for stat in player_stats %}
+        {
+            match: '{{ stat.match.match_id }}',
+            runs1: {{ stat.runs1|default:0 }},
+            runs2: {{ stat.runs2|default:0 }},
+            wickets1: {{ stat.wkt1|default:0 }},
+            wickets2: {{ stat.wkt2|default:0 }},
+            balls1: {{ stat.balls1|default:0 }},
+            balls2: {{ stat.balls2|default:0 }},
+            overs1: {{ stat.overs1|default:0 }},
+            overs2: {{ stat.overs2|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Calculate cumulative data
+    let cumulativeRuns = 0;
+    let cumulativeWickets = 0;
+    const matchLabels = [];
+    const runsData = [];
+    const wicketsData = [];
+    const strikeRateData = [];
+    const economyData = [];
+    
+    playerStats.forEach((stat, index) => {
+        const totalRuns = stat.runs1 + stat.runs2;
+        const totalWickets = stat.wickets1 + stat.wickets2;
+        const totalBalls = stat.balls1 + stat.balls2;
+        const totalOvers = stat.overs1 + stat.overs2;
+        
+        cumulativeRuns += totalRuns;
+        cumulativeWickets += totalWickets;
+        
+        matchLabels.push(`Match ${index + 1}`);
+        runsData.push(cumulativeRuns);
+        wicketsData.push(cumulativeWickets);
+        
+        // Calculate strike rate and economy
+        const strikeRate = totalBalls > 0 ? (totalRuns / totalBalls * 100) : 0;
+        const economy = totalOvers > 0 ? (totalRuns / (totalOvers / 6)) : 0;
+        
+        strikeRateData.push(strikeRate.toFixed(1));
+        economyData.push(economy.toFixed(1));
+    });
+    
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20,
+                    color: textColor
+                }
+            },
+            tooltip: {
+                backgroundColor: isDark ? 'rgba(26, 26, 26, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                titleColor: textColor,
+                bodyColor: textColor,
+                borderColor: accentColor,
+                borderWidth: 1,
+                cornerRadius: 8,
+                displayColors: true
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: gridColor,
+                    drawBorder: false
+                },
+                ticks: {
+                    color: textColor,
+                    padding: 10
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    color: textColor,
+                    padding: 10
+                }
+            }
+        }
+    };
+    
+    // 1. Runs Progress Chart
+    const runsCtx = document.getElementById('runsChart').getContext('2d');
+    const runsChart = new Chart(runsCtx, {
+        type: 'line',
+        data: {
+            labels: matchLabels,
+            datasets: [{
+                label: 'Cumulative Runs',
+                data: runsData,
+                borderColor: accentColor,
+                backgroundColor: `${accentColor}20`,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: accentColor,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            ...commonOptions,
+            plugins: {
+                ...commonOptions.plugins,
+                title: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // 2. Wickets Progress Chart
+    const wicketsCtx = document.getElementById('wicketsChart').getContext('2d');
+    const wicketsChart = new Chart(wicketsCtx, {
+        type: 'bar',
+        data: {
+            labels: matchLabels,
+            datasets: [{
+                label: 'Cumulative Wickets',
+                data: wicketsData,
+                backgroundColor: secondaryColor,
+                borderColor: secondaryColor,
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            ...commonOptions,
+            plugins: {
+                ...commonOptions.plugins,
+                title: {
+                    display: false
+                }
+            }
+        }
+    });
+    
+    // 3. Performance Trends Chart (Strike Rate & Economy)
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(performanceCtx, {
+        type: 'line',
+        data: {
+            labels: matchLabels,
+            datasets: [{
+                label: 'Strike Rate',
+                data: strikeRateData,
+                borderColor: accentColor,
+                backgroundColor: `${accentColor}20`,
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+                pointBackgroundColor: accentColor,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                yAxisID: 'y'
+            }, {
+                label: 'Economy Rate',
+                data: economyData,
+                borderColor: tertiaryColor,
+                backgroundColor: `${tertiaryColor}20`,
+                borderWidth: 2,
+                fill: false,
+                tension: 0.3,
+                pointBackgroundColor: tertiaryColor,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            ...commonOptions,
+            scales: {
+                ...commonOptions.scales,
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    grid: {
+                        drawOnChartArea: false,
+                    },
+                    ticks: {
+                        color: textColor,
+                        padding: 10
+                    }
+                }
+            }
+        }
+    });
+    
+    // 4. Match Performance Overview (Radar Chart)
+    const overviewCtx = document.getElementById('overviewChart').getContext('2d');
+    const overviewChart = new Chart(overviewCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Batting Avg', 'Strike Rate', 'Bowling Avg', 'Economy', 'Wickets/Match', 'Consistency'],
+            datasets: [{
+                label: 'Performance Rating',
+                data: [
+                    Math.min({{ batting_average|default:0 }}, 100),
+                    Math.min({{ average_strike_rate|default:0 }}, 200),
+                    Math.min({{ average_wickets|default:0 }} * 20, 100),
+                    Math.max(100 - {{ average_economy|default:10 }} * 10, 0),
+                    Math.min({{ average_wickets|default:0 }} * 25, 100),
+                    75 // Consistency score (can be calculated based on variance)
+                ],
+                borderColor: accentColor,
+                backgroundColor: `${accentColor}30`,
+                borderWidth: 2,
+                pointBackgroundColor: accentColor,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: textColor,
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: isDark ? 'rgba(26, 26, 26, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                    titleColor: textColor,
+                    bodyColor: textColor,
+                    borderColor: accentColor,
+                    borderWidth: 1,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: {
+                        color: gridColor
+                    },
+                    pointLabels: {
+                        color: textColor,
+                        font: {
+                            size: 11
+                        }
+                    },
+                    ticks: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+    
+    // Store charts in window object for theme updates
+    window.charts = {
+        runsChart,
+        wicketsChart,
+        performanceChart,
+        overviewChart
+    };
+}
+
+// Update chart theme function
+function updateChartTheme() {
+    if (!window.charts) return;
+    
+    const isDark = currentTheme === 'dark';
+    const textColor = isDark ? '#ffffff' : '#0a0a0a';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    
+    // Update global defaults
+    Chart.defaults.color = textColor;
+    
+    // Update each chart
+    Object.values(window.charts).forEach(chart => {
+        // Update text colors
+        if (chart.options.plugins && chart.options.plugins.legend) {
+            chart.options.plugins.legend.labels.color = textColor;
+        }
+        
+        // Update tooltip colors
+        if (chart.options.plugins && chart.options.plugins.tooltip) {
+            chart.options.plugins.tooltip.backgroundColor = isDark ? 'rgba(26, 26, 26, 0.9)' : 'rgba(255, 255, 255, 0.9)';
+            chart.options.plugins.tooltip.titleColor = textColor;
+            chart.options.plugins.tooltip.bodyColor = textColor;
+        }
+        
+        // Update scales
+        if (chart.options.scales) {
+            Object.keys(chart.options.scales).forEach(scaleKey => {
+                const scale = chart.options.scales[scaleKey];
+                if (scale.grid) {
+                    scale.grid.color = gridColor;
+                }
+                if (scale.ticks) {
+                    scale.ticks.color = textColor;
+                }
+                if (scale.pointLabels) {
+                    scale.pointLabels.color = textColor;
+                }
+            });
+        }
+        
+        // Update and re-render
+        chart.update('none');
+    });
+}
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileToggle = document.getElementById('mobileToggle');
+            
+            if (!mobileMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+                mobileToggle.classList.remove('active');
+            }
+        });
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const mobileToggle = document.getElementById('mobileToggle');
+                mobileMenu.classList.remove('active');
+                mobileToggle.classList.remove('active');
+            }
+            
+            // Theme toggle with 'T' key
+            if (e.key === 't' || e.key === 'T') {
+                if (!e.target.matches('input, textarea')) {
+                    toggleTheme();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

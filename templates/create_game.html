@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Match</title>
+    <style>
+        /* General Styles */
+        :root {
+            --background-color: black;
+            --text-color: white;
+            --secondary-color: #aaa;
+            --button-bg-color:rgb(242, 134, 101);
+            --button-text-color: black;
+            --separator-color: linear-gradient(to right, #444, transparent);
+            --highlight-color: #ff5722; /* Highlight color for scores */
+            --select-bg-color: #333; /* Background color for select inputs */
+            --select-border-color: #444;
+            --table-row-odd-bg-color:#444;
+            --table-row-even-bg-color:#555;
+            --tab-bg:rgba(245, 100, 3, 0.31);
+        }
+    
+        [data-theme="light"] {
+            --background-color: white;
+            --text-color: black;
+            --secondary-color: #555;
+            --button-bg-color:rgb(73, 159, 251);
+            --button-text-color: white;
+            --separator-color: linear-gradient(to right, #ddd, transparent);
+            --highlight-color: #007bff;
+            --select-bg-color: #fff; /* Background color for select inputs in light theme */
+            --select-border-color: #ccc; 
+            --table-row-even-bg-color:#bbdefb;
+            --table-row-odd-bg-color:  #e3f2fd;
+            --tab-bg: rgba(3, 209, 245, 0.31);
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        
+        a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+        
+        a:hover {
+            color: var(--secondary-color);
+        }
+        
+        /* Navigation Bar */
+        nav {
+            width: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            font-size: 16px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 4px 0;
+        }
+        
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--background-color);
+            padding: 15px;
+            position: absolute;
+            top: 65px;
+            right: 0;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-button {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-button:hover {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+            box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.3);
+        }
+        /* Create-Menu */
+        .container {
+            width: 100%;
+            background-color: var(--background-color);
+            padding: 80px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .team {
+            background-color: var(--background-color);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+        }
+        
+        .team h2 {
+            text-align: center;
+            color: var(--text-color);
+        }
+        
+        .player {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid var(--text-color);
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            background: var(--button-bg-color);
+            color: var(--button-text-color);
+        }
+        
+            .player.selected {
+                background-color: var(--background-color, #243b55); /* A dark, rich background for dark mode */
+                color: var(--text-color, #e6f7ff); /* Light text for contrast */
+                font-weight: bold; /* Make text bold for emphasis */
+                box-shadow: 0 0 15px rgba(51, 153, 255, 0.8), 0 0 30px rgba(51, 153, 255, 0.5); /* Strong glow effect */
+                border: 1px solid rgba(51, 153, 255, 0.8); /* Subtle border to reinforce selection */
+                
+            }
+        
+        .match-settings {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--background-color);
+        }
+        
+        .match-settings h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        
+        .match-settings label {
+            display: block;
+            margin: 10px 0 5px;
+            width: 100%;
+            color: var(--text-color);
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        
+        button {
+            width: 100%;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+        }
+        
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            font-size: 12px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+        
+            .hamburger {
+                display: flex;
+            }
+        
+            .mobile-menu.active {
+                display: flex;
+            }
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .team, .match-settings {
+                margin-bottom: 20px;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <a href="/">QuickWicket</a>
+        </div>
+        <div class="nav-links">
+            <div class="theme-toggle"><span><a href="/">Home</a></span></div>
+            <div class="theme-toggle"><span><a href="/matches">Matches</a></span></div>
+            <div class="theme-toggle"><span><a href="/players">Players</a></span></div>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span>    
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            </div>
+            {% if user.is_authenticated %}
+            <button class="login-button" onclick="window.location.href='/logout';">Log Out</button>
+            {% else %}
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+            {% endif %}
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/">Home</a>
+            <a href="/matches">Matches</a>
+            <a href="/players">Players</a>
+            <a href="#" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            {% if user.is_authenticated %}
+            <button class="login-button" onclick="window.location.href='/logout';">Log Out</button>
+            {% else %}
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+            {% endif %}
+        </div>
+    </nav>
+    
+
+    <!--Create-Menu-->
+    <div class="container">
+        <div class="team" id="team1">
+            <h2>
+                <select id="team-1">
+                    {% for team in teams %}
+                    <option>{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </h2>
+            {% for player in players %}
+            {% if player != "n3055" %}
+            <div class="player">{{ player }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="team" id="team2">
+            <h2>
+                <select id="team-2">
+                    {% for team in teams %}
+                    <option>{{ team }}</option>
+                    {% endfor %}
+                </select>
+            </h2>
+            {% for player in players %}
+            {% if player != "n3055" %}
+            <div class="player">{{ player }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="match-settings">
+            <h2>Match Settings</h2>
+            <label for="toss">Which Team Bats First?</label>
+            <select id="toss">
+                <option value="">Select a team</option>
+            </select>
+
+            <button id="createGame">Create Game</button>
+        </div>
+
+    </div>    
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 QuickWicket. All rights reserved.
+        Made with <3 by Rishi
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const team1Select = document.getElementById('team-1');
+            const team2Select = document.getElementById('team-2');
+            const tossSelect = document.getElementById('toss');
+            const players = document.querySelectorAll('.player');
+
+            // Restrict selection of same team for both dropdowns
+            team1Select.addEventListener('change', () => {
+                updateTossOptions();
+                updateTeamOptions();
+            });
+
+            team2Select.addEventListener('change', () => {
+                updateTossOptions();
+                updateTeamOptions();
+            });
+
+            // Toggle player selection and prevent the same player in both teams
+            players.forEach(player => {
+                player.addEventListener('click', () => {
+                    const team1Players = document.querySelectorAll('#team1 .player.selected');
+                    const team2Players = document.querySelectorAll('#team2 .player.selected');
+
+                    if (player.closest('#team1')) {
+                        if (Array.from(team2Players).some(p => p.textContent === player.textContent)) {
+                            alert('Player already selected in Team 2!');
+                            return;
+                        }
+                    } else if (player.closest('#team2')) {
+                        if (Array.from(team1Players).some(p => p.textContent === player.textContent)) {
+                            alert('Player already selected in Team 1!');
+                            return;
+                        }
+                    }
+                    player.classList.toggle('selected');
+                });
+            });
+
+            // Update toss options based on selected teams
+            function updateTossOptions() {
+                tossSelect.innerHTML = '';
+                const team1Value = team1Select.value;
+                const team2Value = team2Select.value;
+
+                if (team1Value) {
+                    const option = document.createElement('option');
+                    option.value = team1Value;
+                    option.textContent = team1Value;
+                    tossSelect.appendChild(option);
+                }
+
+                if (team2Value) {
+                    const option = document.createElement('option');
+                    option.value = team2Value;
+                    option.textContent = team2Value;
+                    tossSelect.appendChild(option);
+                }
+            }
+
+            // Update available options in team dropdowns
+            function updateTeamOptions() {
+                const team1Value = team1Select.value;
+                const team2Value = team2Select.value;
+
+                Array.from(team2Select.options).forEach(option => {
+                    option.disabled = option.value === team1Value;
+                });
+
+                Array.from(team1Select.options).forEach(option => {
+                    option.disabled = option.value === team2Value;
+                });
+            }
+
+            document.getElementById('createGame').addEventListener('click', async () => {
+                const team1Players = Array.from(document.querySelectorAll('#team1 .player.selected'))
+                    .map(player => player.textContent.trim());
+
+                const team2Players = Array.from(document.querySelectorAll('#team2 .player.selected'))
+                    .map(player => player.textContent.trim());
+
+                const tossWinner = tossSelect.value;
+
+                const data = {
+                    team1: team1Players,
+                    team2: team2Players,
+                    toss_winner: tossWinner,
+                    team1name: team1Select.value,
+                    team2name: team2Select.value
+                };
+
+                try {
+                    const response = await fetch('/begin_game/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        window.location.href = `/game/${result.room_id}`;
+                        console.log(result);
+                    } else {
+                        alert('Failed to create the game. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while creating the game.');
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Test Match - QuickWicket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Orange and Black Theme Variables */
+        :root {
+            --primary-color: #ff6b35;
+            --primary-dark: #e55a2b;
+            --secondary-color: #ff8c42;
+            --accent-color: #ffa726;
+            --background-color: #0a0a0a;
+            --surface-color: #1a1a1a;
+            --surface-elevated: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-muted: #808080;
+            --divider-color: #333333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --shadow-1: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-2: 0 4px 16px rgba(0,0,0,0.4);
+            --shadow-3: 0 8px 32px rgba(0,0,0,0.5);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            --glow-orange: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        [data-theme="light"] {
+            --primary-color: #ff6b35;
+            --primary-dark: #e55a2b;
+            --secondary-color: #ff8c42;
+            --accent-color: #ffa726;
+            --background-color: #fafafa;
+            --surface-color: #ffffff;
+            --surface-elevated: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --divider-color: #e0e0e0;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --shadow-1: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-2: 0 4px 16px rgba(0,0,0,0.15);
+            --shadow-3: 0 8px 32px rgba(0,0,0,0.2);
+            --glow-orange: 0 0 20px rgba(255, 107, 53, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Enhanced Navigation */
+        nav {
+            background: linear-gradient(135deg, var(--surface-color) 0%, var(--surface-elevated) 100%);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 32px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition);
+            letter-spacing: -0.5px;
+            text-shadow: var(--glow-orange);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: var(--transition);
+            position: relative;
+            padding: 8px 0;
+            letter-spacing: 0.2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            background: var(--surface-elevated);
+            border: 2px solid var(--divider-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: var(--glow-orange);
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 28px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-1);
+            letter-spacing: 0.3px;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: var(--shadow-2), var(--glow-orange);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Navigation */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .hamburger div {
+            width: 28px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .hamburger:hover div {
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+        }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 72px;
+            right: 0;
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-3);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            padding: 24px;
+            min-width: 250px;
+            border: 1px solid var(--divider-color);
+        }
+
+        .mobile-menu.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mobile-menu a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--divider-color);
+            transition: var(--transition);
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary-color);
+            padding-left: 8px;
+        }
+
+        /* Main Content */
+        .main-container {
+            margin-top: 72px;
+            padding: 32px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--divider-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Error State */
+        .error-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .error-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--error-color);
+            text-align: center;
+        }
+
+        .retry-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .retry-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Live Indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, var(--error-color), #d32f2f);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            animation: pulse 2s infinite;
+            box-shadow: var(--shadow-2);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.02); }
+        }
+
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Scorecard */
+        .scorecard {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-2);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+            border: 1px solid var(--divider-color);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Match Header */
+        .match-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 50%, #1a1a1a 100%);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .match-header h2 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .match-header p {
+            font-size: 20px;
+            font-weight: 500;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.3px;
+        }
+
+        /* Team Logos */
+        .team-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 32px;
+            color: white;
+            box-shadow: var(--shadow-2), var(--glow-orange);
+            transition: var(--transition);
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .team-logo:hover {
+            transform: scale(1.15) rotate(10deg);
+            box-shadow: var(--shadow-3), var(--glow-orange);
+        }
+
+        .vs-text {
+            font-size: 24px;
+            font-weight: 700;
+            opacity: 0.9;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Test Match Score Layout */
+        .test-match-scores {
+            padding: 32px;
+            background: var(--background-color);
+        }
+
+        .innings-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .team-innings {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            border: 2px solid var(--divider-color);
+            transition: var(--transition);
+        }
+
+        .team-innings.batting {
+            border-color: var(--primary-color);
+            box-shadow: var(--glow-orange);
+            background: linear-gradient(135deg, var(--surface-color) 0%, var(--surface-elevated) 100%);
+        }
+
+        .team-innings:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-2);
+        }
+
+        .team-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--divider-color);
+        }
+
+        .team-logo-small {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+            box-shadow: var(--shadow-1);
+        }
+
+        .team-name-large {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .innings-scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .innings-score {
+            text-align: center;
+            padding: 16px;
+            background: var(--background-color);
+            border-radius: 8px;
+            border: 1px solid var(--divider-color);
+        }
+
+        .innings-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-large {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .score-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .current-batting {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .current-batting h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .current-score-display {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 16px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
+
+        .current-details {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Current Players */
+        .current-players {
+            background: var(--surface-elevated);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin: 24px 0;
+            border: 1px solid var(--divider-color);
+        }
+
+        .current-players h3 {
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .player-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-1);
+            transition: var(--transition);
+            border: 1px solid var(--divider-color);
+        }
+
+        .player-card:hover {
+            box-shadow: var(--shadow-2);
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .player-avatar-large {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: var(--shadow-1);
+        }
+
+        .player-name {
+            font-weight: 600;
+            font-size: 18px;
+            flex: 1;
+            letter-spacing: -0.2px;
+        }
+
+        .striker-indicator {
+            background: linear-gradient(135deg, var(--success-color), #66bb6a);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .player-stats span {
+            text-align: center;
+            padding: 8px;
+            background: var(--background-color);
+            border-radius: 6px;
+            border: 1px solid var(--divider-color);
+        }
+
+        .player-stats strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            margin: 32px 0;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--surface-elevated);
+            border-radius: var(--border-radius);
+            padding: 6px;
+            overflow-x: auto;
+            border: 1px solid var(--divider-color);
+        }
+
+        .tab-button {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 16px 20px;
+            border-radius: calc(var(--border-radius) - 6px);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            box-shadow: var(--shadow-1);
+            transform: translateY(-1px);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--surface-color);
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content h4 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 24px 0 16px 0;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        /* Tables */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-1);
+            margin: 20px 0;
+            border: 1px solid var(--divider-color);
+        }
+
+        .stats-table th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 18px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .stats-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--divider-color);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .stats-table tbody tr:hover {
+            background: var(--surface-elevated);
+            transform: scale(1.01);
+        }
+
+        .stats-table tbody tr:nth-child(even) {
+            background: rgba(255, 107, 53, 0.03);
+        }
+
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: var(--shadow-1);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            border-top: 2px solid var(--divider-color);
+            margin-top: 64px;
+            background: var(--surface-color);
+            font-weight: 500;
+        }
+
+        /* Winner Announcement */
+        .winner-announcement {
+            background: linear-gradient(135deg, var(--success-color), #66bb6a);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            border-radius: var(--border-radius);
+            margin: 32px 0;
+            box-shadow: var(--shadow-2);
+            animation: celebration 0.8s ease;
+            letter-spacing: -0.5px;
+        }
+
+        @keyframes celebration {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Update Indicator */
+        .update-indicator {
+            position: fixed;
+            top: 88px;
+            right: 32px;
+            background: linear-gradient(135deg, var(--success-color), #66bb6a);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 28px;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            box-shadow: var(--shadow-2);
+        }
+
+        .update-indicator.show {
+            transform: translateX(0);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .main-container {
+                padding: 20px;
+            }
+
+            .logo {
+                font-size: 28px;
+            }
+
+            nav {
+                padding: 0 20px;
+                height: 64px;
+            }
+
+            .main-container {
+                margin-top: 64px;
+            }
+
+            .match-header h2 {
+                font-size: 28px;
+            }
+
+            .team-logo {
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+            }
+
+            .innings-container {
+                grid-template-columns: 1fr;
+            }
+
+            .current-score-display {
+                font-size: 36px;
+            }
+
+            .current-details {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                min-width: 140px;
+                font-size: 14px;
+            }
+
+            .stats-table {
+                font-size: 14px;
+            }
+
+            .stats-table th,
+            .stats-table td {
+                padding: 12px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .team-logos {
+                gap: 20px;
+            }
+
+            .team-logo {
+                width: 56px;
+                height: 56px;
+                font-size: 20px;
+            }
+
+            .current-score-display {
+                font-size: 32px;
+            }
+
+            .match-header {
+                padding: 24px 16px;
+            }
+
+            .test-match-scores {
+                padding: 20px;
+            }
+        }
+        .over-tracker {
+            display: flex;
+            gap: 10px;
+            background-color: var(--select-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ball {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--table-row-odd-bg-color);
+            border-radius: 50%;
+            font-weight: bold;
+            color: var(--text-color);
+            border: 2px solid var(--select-border-color);
+            transition: background-color 0.3s ease;
+        }
+        
+        .ball[data-ball="1"] {
+            background-color: var(--highlight-color);
+            color: var(--button-text-color);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <a href="/">QuickWicket</a>
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/matches">Matches</a>
+            <a href="/players">Players</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/">Home</a>
+            <a href="/matches">Matches</a>
+            <a href="/players">Players</a>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+        </div>
+    </nav>
+
+
+    <!-- Update Indicator -->
+    <div class="update-indicator" id="updateIndicator">
+        <span class="loading"></span> Updating...
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Loading State -->
+        <div id="loadingContainer" class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading match data...</div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorContainer" class="error-container hidden">
+            <div class="error-text">Failed to load match data. Please check your connection and try again.</div>
+            <button class="retry-button" onclick="fetchMatchData()">Retry</button>
+        </div>
+
+        <!-- Match Content -->
+        <div id="matchContent" class="hidden">
+            <!-- Live Indicator -->
+            <div id="liveIndicator" class="live-indicator hidden">
+                <div class="live-dot"></div>
+                LIVE TEST MATCH
+            </div>
+
+            <!-- Scorecard -->
+            <div class="scorecard">
+                <!-- Match Header -->
+                <div class="match-header">
+                    <h2>Live Test Match</h2>
+                    <div class="team-logos">
+                        <div class="team-logo" id="team1Logo">T1</div>
+                        <div class="vs-text">VS</div>
+                        <div class="team-logo" id="team2Logo">T2</div>
+                    </div>
+                    <p><span id="team1Name">Team 1</span> vs <span id="team2Name">Team 2</span></p>
+                </div>
+
+                <!-- Winner Announcement -->
+                <div id="winnerAnnouncement" class="winner-announcement hidden">
+                    🏆 <span id="winnerName">Team</span> Won the Test Match! 🎉
+                </div>
+
+                <!-- Test Match Scores -->
+                <div class="test-match-scores">
+                    <!-- Both Teams Innings Display -->
+                    <div class="innings-container">
+                        <!-- Team 1 -->
+                        <div class="team-innings" id="team1Innings">
+                            <div class="team-header">
+                                <div class="team-logo-small" id="team1LogoSmall">T1</div>
+                                <div class="team-name-large" id="team1NameLarge">Team 1</div>
+                            </div>
+                            <div class="innings-scores">
+                                <div class="innings-score">
+                                    <div class="innings-label">1st Innings</div>
+                                    <div class="score-large" id="t1run1">0/0</div>
+                                    <div class="score-details"><span id="t1overs1">0</span> overs</div>
+                                </div>
+                                <div class="innings-score">
+                                    <div class="innings-label">2nd Innings</div>
+                                    <div class="score-large" id="t1run2">0/0</div>
+                                    <div class="score-details"><span id="t1overs2">0</span> overs</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Team 2 -->
+                        <div class="team-innings" id="team2Innings">
+                            <div class="team-header">
+                                <div class="team-logo-small" id="team2LogoSmall">T2</div>
+                                <div class="team-name-large" id="team2NameLarge">Team 2</div>
+                            </div>
+                            <div class="innings-scores">
+                                <div class="innings-score">
+                                    <div class="innings-label">1st Innings</div>
+                                    <div class="score-large" id="t2run1">0/0</div>
+                                    <div class="score-details"><span id="t2overs1">0</span> overs</div>
+                                </div>
+                                <div class="innings-score">
+                                    <div class="innings-label">2nd Innings</div>
+                                    <div class="score-large" id="t2run2">0/0</div>
+                                    <div class="score-details"><span id="t2overs2">0</span> overs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Batting Display -->
+                    <div id="currentBattingSection" class="current-batting hidden">
+                        <h3><span id="battingTeam">Team</span> - Currently Batting (Innings <span id="currentInnings">1</span>)</h3>
+                        <div class="current-score-display" id="currentScore">0/0</div>
+                        <div class="current-details">
+                            <span>Overs: <strong id="currentOvers">0</strong></span>
+                            <span>Run Rate: <strong id="runRate">0.00</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Current Players -->
+                    <div id="currentPlayersSection" class="current-players hidden">
+                        <h3>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor"/>
+                            </svg>
+                            Current Batsmen
+                        </h3>
+                        <div class="players-grid">
+                            <div class="player-card">
+                                <div class="player-info">
+                                    <div class="player-avatar-large" id="strikerAvatar">S</div>
+                                    <div class="player-name" id="strikerName">Striker</div>
+                                    <div class="striker-indicator">On Strike</div>
+                                </div>
+                                <div class="player-stats">
+                                    <span>Runs<br><strong id="strikerRuns">0</strong></span>
+                                    <span>Balls<br><strong id="strikerBalls">0</strong></span>
+                                    <span>SR<br><strong id="strikerSR">0.00</strong></span>
+                                </div>
+                            </div>
+                            <div class="player-card">
+                                <div class="player-info">
+                                    <div class="player-avatar-large" id="nonStrikerAvatar">N</div>
+                                    <div class="player-name" id="nonStrikerName">Non-Striker</div>
+                                </div>
+                                <div class="player-stats">
+                                    <span>Runs<br><strong id="nonStrikerRuns">0</strong></span>
+                                    <span>Balls<br><strong id="nonStrikerBalls">0</strong></span>
+                                    <span>SR<br><strong id="nonStrikerSR">0.00</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-top: 32px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M8 12L11 15L16 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Current Bowler
+                        </h3>
+                        <div class="player-card">
+                            <div class="player-info">
+                                <div class="player-avatar-large" id="bowlerAvatar">B</div>
+                                <div class="player-name" id="bowlerName">Bowler</div>
+                            </div>
+                            <div class="player-stats">
+                                <span>Overs<br><strong id="bowlerOvers">0</strong></span>
+                                <span>Runs<br><strong id="bowlerRuns">0</strong></span>
+                                <span>Wickets<br><strong id="bowlerWickets">0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs-container">
+                        <div class="tabs">
+                            <button class="tab-button active" onclick="openTab('team1-1st')" id="tab1">Team 1 1st Inn</button>
+                            <button class="tab-button" onclick="openTab('team2-1st')" id="tab2">Team 2 1st Inn</button>
+                            <button class="tab-button" onclick="openTab('team1-2nd')" id="tab3">Team 1 2nd Inn</button>
+                            <button class="tab-button" onclick="openTab('team2-2nd')" id="tab4">Team 2 2nd Inn</button>
+                        </div>
+
+                        <!-- Tab Contents -->
+                        <div id="team1-1st" class="tab-content active">
+                            <h4 id="team1-1st-batting-title">Team 1 - 1st Innings Batting</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Runs</th>
+                                        <th>Balls</th>
+                                        <th>Strike Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team1-1st-batting-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+
+                            <h4 id="team2-1st-bowling-title">Team 2 - 1st Innings Bowling</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Runs</th>
+                                        <th>Wickets</th>
+                                        <th>Economy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team2-1st-bowling-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="team2-1st" class="tab-content">
+                            <h4 id="team2-1st-batting-title">Team 2 - 1st Innings Batting</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Runs</th>
+                                        <th>Balls</th>
+                                        <th>Strike Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team2-1st-batting-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+
+                            <h4 id="team1-1st-bowling-title">Team 1 - 1st Innings Bowling</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Runs</th>
+                                        <th>Wickets</th>
+                                        <th>Economy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team1-1st-bowling-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="team1-2nd" class="tab-content">
+                            <h4 id="team1-2nd-batting-title">Team 1 - 2nd Innings Batting</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Runs</th>
+                                        <th>Balls</th>
+                                        <th>Strike Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team1-2nd-batting-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+
+                            <h4 id="team2-2nd-bowling-title">Team 2 - 2nd Innings Bowling</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Runs</th>
+                                        <th>Wickets</th>
+                                        <th>Economy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team2-2nd-bowling-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="team2-2nd" class="tab-content">
+                            <h4 id="team2-2nd-batting-title">Team 2 - 2nd Innings Batting</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Player</th>
+                                        <th>Runs</th>
+                                        <th>Balls</th>
+                                        <th>Strike Rate</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team2-2nd-batting-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+
+                            <h4 id="team1-2nd-bowling-title">Team 1 - 2nd Innings Bowling</h4>
+                            <table class="stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bowler</th>
+                                        <th>Overs</th>
+                                        <th>Runs</th>
+                                        <th>Wickets</th>
+                                        <th>Economy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="team1-2nd-bowling-body">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 QuickWicket. All rights reserved.<br>
+        Made with ❤️ by Rishi
+    </footer>
+
+    <script>
+        // Global variables
+        let matchData = null;
+        let pollInterval = null;
+        let gameId = null;
+
+        // Extract game_id from URL
+        function getGameIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('game_id') || window.location.pathname.split('/').pop();
+        }
+
+        // Set dark theme as default
+        document.documentElement.setAttribute('data-theme', 'dark');
+
+        // Theme Toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        // Tab Functionality
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[onclick="openTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Fetch match data from API
+        async function fetchMatchData() {
+            if (!gameId) {
+                showError('No game ID provided');
+                return;
+            }
+
+            try {
+                showUpdateIndicator();
+                const response = await fetch(`/game_details/${gameId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                matchData = data;
+                updateUI(data);
+                showMatchContent();
+                
+            } catch (error) {
+                console.error('Error fetching match data:', error);
+                showError('Failed to load match data. Please try again.');
+            } finally {
+                hideUpdateIndicator();
+            }
+        }
+
+        // Update UI with match data
+        function updateUI(data) {
+            // Update team names and logos
+            document.getElementById('team1Name').textContent = data.team_1;
+            document.getElementById('team2Name').textContent = data.team_2;
+            document.getElementById('team1NameLarge').textContent = data.team_1;
+            document.getElementById('team2NameLarge').textContent = data.team_2;
+            
+            // Update logos (first letter of team name)
+            const team1Initial = data.team_1.charAt(0).toUpperCase();
+            const team2Initial = data.team_2.charAt(0).toUpperCase();
+            document.getElementById('team1Logo').textContent = team1Initial;
+            document.getElementById('team2Logo').textContent = team2Initial;
+            document.getElementById('team1LogoSmall').textContent = team1Initial;
+            document.getElementById('team2LogoSmall').textContent = team2Initial;
+
+            // Update scores
+            document.getElementById('t1run1').textContent = `${data.t1run1}/${data.t1wkt1}`;
+            document.getElementById('t1run2').textContent = `${data.t1run2}/${data.t1wkt2}`;
+            document.getElementById('t2run1').textContent = `${data.t2run1}/${data.t2wkt1}`;
+            document.getElementById('t2run2').textContent = `${data.t2run2}/${data.t2wkt2}`;
+            
+            document.getElementById('t1overs1').textContent = data.t1overs1;
+            document.getElementById('t1overs2').textContent = data.t1overs2;
+            document.getElementById('t2overs1').textContent = data.t2overs1;
+            document.getElementById('t2overs2').textContent = data.t2overs2;
+
+            // Update batting team indicator
+            if (data.batting === data.team_1) {
+                document.getElementById('team1Innings').classList.add('batting');
+                document.getElementById('team2Innings').classList.remove('batting');
+            } else {
+                document.getElementById('team2Innings').classList.add('batting');
+                document.getElementById('team1Innings').classList.remove('batting');
+            }
+
+            // Show/hide live indicator and winner announcement
+            if (data.won) {
+                document.getElementById('liveIndicator').classList.add('hidden');
+                document.getElementById('winnerAnnouncement').classList.remove('hidden');
+                document.getElementById('winnerName').textContent = data.won;
+                document.getElementById('currentBattingSection').classList.add('hidden');
+                document.getElementById('currentPlayersSection').classList.add('hidden');
+            } else {
+                document.getElementById('liveIndicator').classList.remove('hidden');
+                document.getElementById('winnerAnnouncement').classList.add('hidden');
+                document.getElementById('currentBattingSection').classList.remove('hidden');
+                document.getElementById('currentPlayersSection').classList.remove('hidden');
+                
+                // Update current batting info
+                updateCurrentBattingInfo(data);
+                updateCurrentPlayers(data);
+            }
+
+            // Update tab labels
+            updateTabLabels(data);
+            
+            // Update player tables
+            updatePlayerTables(data);
+        }
+
+        // Update current batting information
+        function updateCurrentBattingInfo(data) {
+            document.getElementById('battingTeam').textContent = data.batting;
+            document.getElementById('currentInnings').textContent = data.innings;
+
+            let currentRuns, currentWickets, currentOvers;
+            
+            if (data.batting === data.team_1 && data.innings === 1) {
+                currentRuns = data.t1run1;
+                currentWickets = data.t1wkt1;
+                currentOvers = data.t1overs1;
+            } else if (data.batting === data.team_1 && data.innings === 2) {
+                currentRuns = data.t1run2;
+                currentWickets = data.t1wkt2;
+                currentOvers = data.t1overs2;
+            } else if (data.batting === data.team_2 && data.innings === 1) {
+                currentRuns = data.t2run1;
+                currentWickets = data.t2wkt1;
+                currentOvers = data.t2overs1;
+            } else {
+                currentRuns = data.t2run2;
+                currentWickets = data.t2wkt2;
+                currentOvers = data.t2overs2;
+            }
+
+            document.getElementById('currentScore').textContent = `${currentRuns}/${currentWickets}`;
+            document.getElementById('currentOvers').textContent = currentOvers;
+            
+            // Calculate run rate
+            const runRate = currentOvers > 0 ? (currentRuns / currentOvers).toFixed(2) : '0.00';
+            document.getElementById('runRate').textContent = runRate;
+        }
+
+        // Update current players
+        function updateCurrentPlayers(data) {
+            if (data.striker) {
+                document.getElementById('strikerName').textContent = data.striker.username;
+                document.getElementById('strikerAvatar').textContent = data.striker.username.charAt(0).toUpperCase();
+                
+                const strikerRuns = data.innings === 1 ? data.striker.runs1 : data.striker.runs2;
+                const strikerBalls = data.innings === 1 ? data.striker.balls1 : data.striker.balls2;
+                const strikerSR = strikerBalls > 0 ? ((strikerRuns / strikerBalls) * 100).toFixed(2) : '0.00';
+                
+                document.getElementById('strikerRuns').textContent = strikerRuns;
+                document.getElementById('strikerBalls').textContent = strikerBalls;
+                document.getElementById('strikerSR').textContent = strikerSR;
+            }
+
+            if (data.non_striker) {
+                document.getElementById('nonStrikerName').textContent = data.non_striker.username;
+                document.getElementById('nonStrikerAvatar').textContent = data.non_striker.username.charAt(0).toUpperCase();
+                
+                const nonStrikerRuns = data.innings === 1 ? data.non_striker.runs1 : data.non_striker.runs2;
+                const nonStrikerBalls = data.innings === 1 ? data.non_striker.balls1 : data.non_striker.balls2;
+                const nonStrikerSR = nonStrikerBalls > 0 ? ((nonStrikerRuns / nonStrikerBalls) * 100).toFixed(2) : '0.00';
+                
+                document.getElementById('nonStrikerRuns').textContent = nonStrikerRuns;
+                document.getElementById('nonStrikerBalls').textContent = nonStrikerBalls;
+                document.getElementById('nonStrikerSR').textContent = nonStrikerSR;
+            }
+
+            if (data.bowler) {
+                document.getElementById('bowlerName').textContent = data.bowler.username;
+                document.getElementById('bowlerAvatar').textContent = data.bowler.username.charAt(0).toUpperCase();
+                
+                const bowlerOvers = data.innings === 1 ? data.bowler.overs1 : data.bowler.overs2;
+                const bowlerRuns = data.innings === 1 ? data.bowler.bruns1 : data.bowler.bruns2;
+                const bowlerWickets = data.innings === 1 ? data.bowler.wkt1 : data.bowler.wkt2;
+                
+                document.getElementById('bowlerOvers').textContent = formatOvers(bowlerOvers);
+                document.getElementById('bowlerRuns').textContent = bowlerRuns;
+                document.getElementById('bowlerWickets').textContent = bowlerWickets;
+            }
+        }
+
+        // Update tab labels
+        function updateTabLabels(data) {
+        const dictionary = {
+            "Ashwamedha":"AWM",
+            "Jatayu":"JTY",
+        };
+            document.getElementById('tab1').textContent = `${dictionary[data.team_1]} 1st Inn`;
+            document.getElementById('tab2').textContent = `${dictionary[data.team_2]} 1st Inn`;
+            document.getElementById('tab3').textContent = `${dictionary[data.team_1]} 2nd Inn`;
+            document.getElementById('tab4').textContent = `${dictionary[data.team_2]} 2nd Inn`;
+        }
+
+        // Update player tables
+        function updatePlayerTables(data) {
+            // Update table titles
+            document.getElementById('team1-1st-batting-title').textContent = `${data.team_1} - 1st Innings Batting`;
+            document.getElementById('team2-1st-bowling-title').textContent = `${data.team_2} - 1st Innings Bowling`;
+            document.getElementById('team2-1st-batting-title').textContent = `${data.team_2} - 1st Innings Batting`;
+            document.getElementById('team1-1st-bowling-title').textContent = `${data.team_1} - 1st Innings Bowling`;
+            document.getElementById('team1-2nd-batting-title').textContent = `${data.team_1} - 2nd Innings Batting`;
+            document.getElementById('team2-2nd-bowling-title').textContent = `${data.team_2} - 2nd Innings Bowling`;
+            document.getElementById('team2-2nd-batting-title').textContent = `${data.team_2} - 2nd Innings Batting`;
+            document.getElementById('team1-2nd-bowling-title').textContent = `${data.team_1} - 2nd Innings Bowling`;
+
+            // Update batting tables
+            updateBattingTable('team1-1st-batting-body', data.t1_players, 1);
+            updateBattingTable('team2-1st-batting-body', data.t2_players, 1);
+            updateBattingTable('team1-2nd-batting-body', data.t1_players, 2);
+            updateBattingTable('team2-2nd-batting-body', data.t2_players, 2);
+
+            // Update bowling tables
+            updateBowlingTable('team2-1st-bowling-body', data.t2_players, 1);
+            updateBowlingTable('team1-1st-bowling-body', data.t1_players, 1);
+            updateBowlingTable('team2-2nd-bowling-body', data.t2_players, 2);
+            updateBowlingTable('team1-2nd-bowling-body', data.t1_players, 2);
+        }
+
+        // Update batting table
+        function updateBattingTable(tableId, players, innings) {
+            const tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            players.forEach(player => {
+                const runs = innings === 1 ? player.runs1 : player.runs2;
+                const balls = innings === 1 ? player.balls1 : player.balls2;
+                const isOut = innings === 1 ? player.out1 : player.out2;
+                const strikeRate = balls > 0 ? ((runs / balls) * 100).toFixed(2) : '0.00';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="player-avatar">${player.username.charAt(0).toUpperCase()}</div>
+                            <span style="font-weight: 600;">${player.username}</span>
+                        </div>
+                    </td>
+                    <td style="font-weight: 700; color: var(--primary-color);">${runs}</td>
+                    <td>${balls}</td>
+                    <td>${strikeRate}</td>
+                    <td>
+                        ${isOut ? 
+                            '<span style="color: var(--error-color); font-weight: 700;">Out</span>' : 
+                            '<span style="color: var(--success-color); font-weight: 700;">Not Out</span>'
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update bowling table
+        function updateBowlingTable(tableId, players, innings) {
+            const tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            players.forEach(player => {
+                const overs = innings === 1 ? player.overs1 : player.overs2;
+                const runs = innings === 1 ? player.bruns1 : player.bruns2;
+                const wickets = innings === 1 ? player.wkt1 : player.wkt2;
+                const economy = overs > 0 ? (runs / (overs / 6)).toFixed(2) : '0.00';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="player-avatar">${player.username.charAt(0).toUpperCase()}</div>
+                            <span style="font-weight: 600;">${player.username}</span>
+                        </div>
+                    </td>
+                    <td>${formatOvers(overs)}</td>
+                    <td>${runs}</td>
+                    <td style="font-weight: 700; color: var(--primary-color);">${wickets}</td>
+                    <td>${economy}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Format overs (convert balls to overs.balls format)
+        function formatOvers(balls) {
+            if (!balls) return '0.0';
+            const completedOvers = Math.floor(balls / 6);
+            const remainingBalls = balls % 6;
+            return `${completedOvers}.${remainingBalls}`;
+        }
+
+        // Show/hide UI states
+        function showLoading() {
+            document.getElementById('loadingContainer').classList.remove('hidden');
+            document.getElementById('errorContainer').classList.add('hidden');
+            document.getElementById('matchContent').classList.add('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loadingContainer').classList.add('hidden');
+            document.getElementById('errorContainer').classList.remove('hidden');
+            document.getElementById('matchContent').classList.add('hidden');
+            document.querySelector('.error-text').textContent = message;
+        }
+
+        function showMatchContent() {
+            document.getElementById('loadingContainer').classList.add('hidden');
+            document.getElementById('errorContainer').classList.add('hidden');
+            document.getElementById('matchContent').classList.remove('hidden');
+        }
+
+        // Update indicator functions
+        function showUpdateIndicator() {
+            document.getElementById('updateIndicator').classList.add('show');
+        }
+
+        function hideUpdateIndicator() {
+            setTimeout(() => {
+                document.getElementById('updateIndicator').classList.remove('show');
+            }, 2000);
+        }
+
+        // Start polling for live updates
+        function startPolling() {
+            if (matchData && !matchData.won) {
+                pollInterval = setInterval(() => {
+                    fetchMatchData();
+                }, 5000); 
+            }
+        }
+
+        // Stop polling
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+
+        // Initialize the application
+        function init() {
+            gameId = getGameIdFromUrl();
+            
+            if (!gameId) {
+                showError('No game ID provided in URL. Please check the URL and try again.');
+                return;
+            }
+
+            showLoading();
+            fetchMatchData().then(() => {
+                startPolling();
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Stop polling when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopPolling();
+            } else if (matchData && !matchData.won) {
+                startPolling();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            stopPolling();
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            
+            if (!mobileMenu.contains(event.target) && !hamburger.contains(event.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Add smooth scrolling for mobile
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        pollInterval = setInterval(() => {
+                    fetchMatchData();
+        }, 5000); 
+    </script>
+</body>
+</html>

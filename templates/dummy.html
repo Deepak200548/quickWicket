@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ player_user.username }}'s Performance Summary</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f6d365, #fda085);
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5rem;
+            margin-top: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .summary, .charts, .detailed-stats {
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 8px 12px;
+            margin: 8px 0;
+            background: #ffccbc;
+            border-radius: 8px;
+            color: #444;
+            font-weight: 500;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        ul li:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        th {
+            background: #007bff;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        canvas {
+            margin: 20px 0;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ player_user.username }}'s Performance Summary</h1>
+
+    <div class="summary">
+        <h2>Total and Calculated Stats</h2>
+        <ul>
+            <li>Total Matches Played: {{ matches_played }}</li>
+            <li>Total Runs Scored: {{ total_runs }}</li>
+            <li>Total Balls Faced: {{ total_balls }}</li>
+            <li>Total Overs Bowled: {{ total_overs }}</li>
+            <li>Total Wickets Taken: {{ total_wickets }}</li>
+            <li>Total Bowling Runs Conceded: {{ total_bowling_runs }}</li>
+            <li>Batting Average: {{ batting_average }}</li>
+            <li>Average Strike Rate: {{ average_strike_rate }}</li>
+            <li>Average Economy: {{ average_economy }}</li>
+            <li>Average Wickets Per Match: {{ average_wickets }}</li>
+        </ul>
+    </div>
+
+    <div class="charts">
+        <h2>Visual Performance Summary</h2>
+        <div class="chart-wrapper">
+            <canvas id="runsChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="wicketsChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="strikeRateChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="economyChart"></canvas>
+        </div>
+    </div>
+
+    <div class="detailed-stats">
+        <h2>Detailed Match Stats</h2>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>Team</th>
+                    <th>Runs (Innings 1)</th>
+                    <th>Runs (Innings 2)</th>
+                    <th>Balls Faced (Innings 1)</th>
+                    <th>Balls Faced (Innings 2)</th>
+                    <th>Overs Bowled (Innings 1)</th>
+                    <th>Overs Bowled (Innings 2)</th>
+                    <th>Wickets (Innings 1)</th>
+                    <th>Wickets (Innings 2)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in player_stats %}
+                <tr>
+                    <td>{{ stat.match.match_id }}</td>
+                    <td>{{ stat.team.team_name }}</td>
+                    <td>{{ stat.runs1 }}</td>
+                    <td>{{ stat.runs2 }}</td>
+                    <td>{{ stat.balls1 }}</td>
+                    <td>{{ stat.balls2 }}</td>
+                    <td>{{ stat.overs1 }}</td>
+                    <td>{{ stat.overs2 }}</td>
+                    <td>{{ stat.wkt1 }}</td>
+                    <td>{{ stat.wkt2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Runs Chart
+        new Chart(document.getElementById('runsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Innings 1', 'Innings 2'],
+                datasets: [{
+                    label: 'Total Runs',
+                    data: [{{ total_runs|default:0 }}, {{ total_runs|default:0 }}],
+                    backgroundColor: ['#FF5733', '#33FFBD'],
+                    borderColor: ['#FF6F61', '#45FFC6'],
+                    borderWidth: 2
+                }]
+            }
+        });
+
+        // Wickets Chart
+        new Chart(document.getElementById('wicketsChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Innings 1 Wickets', 'Innings 2 Wickets'],
+                datasets: [{
+                    data: [{{ total_wickets|default:0 }}, {{ total_wickets|default:0 }}],
+                    backgroundColor: ['#FFC300', '#DAF7A6'],
+                    hoverOffset: 4
+                }]
+            }
+        });
+
+        // Strike Rate Chart
+        new Chart(document.getElementById('strikeRateChart'), {
+            type: 'line',
+            data: {
+                labels: ['Match 1', 'Match 2', 'Match 3'],
+                datasets: [{
+                    label: 'Strike Rate',
+                    data: [90, 120, 100],
+                    borderColor: '#2F86A6',
+                    backgroundColor: 'rgba(47, 134, 166, 0.2)',
+                    tension: 0.4
+                }]
+            }
+        });
+
+        // Economy Chart
+        new Chart(document.getElementById('economyChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Match 1', 'Match 2', 'Match 3'],
+                datasets: [{
+                    label: 'Economy Rate',
+                    data: [6.5, 7.2, 5.8],
+                    backgroundColor: 'rgba(128, 0, 128, 0.2)',
+                    borderColor: '#800080'
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

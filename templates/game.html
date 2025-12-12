@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Match</title>
+    <style>
+        /* General Styles */
+        :root {
+            --background-color: black;
+            --text-color: white;
+            --secondary-color: #aaa;
+            --button-bg-color:rgb(242, 134, 101);
+            --button-text-color: black;
+            --separator-color: linear-gradient(to right, #444, transparent);
+            --highlight-color: #ff5722; /* Highlight color for scores */
+            --select-bg-color: #333; /* Background color for select inputs */
+            --select-border-color: #444;
+            --table-row-even-bg-color:#444;
+            --table-row-odd-bg-color:#555;
+            --tab-bg:rgba(245, 100, 3, 0.31);
+        }
+    
+        [data-theme="light"] {
+            --background-color: white;
+            --text-color: black;
+            --secondary-color: #555;
+            --button-bg-color:rgb(73, 159, 251);
+            --button-text-color: white;
+            --separator-color: linear-gradient(to right, #ddd, transparent);
+            --highlight-color: #007bff;
+            --select-bg-color: #fff; /* Background color for select inputs in light theme */
+            --select-border-color: #ccc; 
+            --table-row-even-bg-color:#bbdefb;
+            --table-row-odd-bg-color:  #e3f2fd;
+            --tab-bg: rgba(3, 209, 245, 0.31);
+        }
+    
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+    
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+    
+        a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+    
+        a:hover {
+            color: var(--secondary-color);
+        }
+    
+        /* Navigation Bar */
+        nav {
+            width: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+        }
+    
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            font-size: 16px;
+        }
+    
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+    
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+    
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 4px 0;
+        }
+    
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            background-color: var(--background-color);
+            padding: 15px;
+            position: absolute;
+            top: 65px;
+            right: 0;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .login-button {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+    
+        .login-button:hover {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            border: 2px solid var(--text-color);
+            box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.3);
+        }
+    
+        /* Scorecard */
+        .scorecard {
+            background-color: var(--background-color);
+            border: 2px solid var(--highlight-color);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            margin: auto;
+            padding-top: 120px;
+        }
+    
+        .match-header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--highlight-color);
+            padding-bottom: 10px;
+        }
+    
+        .match-header h2 {
+            font-size: 1.8em;
+            margin: 0;
+            color: var(--text-color);
+        }
+    
+        .score-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+    
+        .score {
+            font-size: 2.8em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-align: center;
+            color: var(--background-color);
+            background-color: var(--highlight-color);
+            padding: 10px 44%;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+    
+        .stats-section {
+            margin-bottom: 20px;
+        }
+    
+        .stats-section table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--highlight-color);
+        }
+    
+        .stats-section th, .stats-section td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid var(--highlight-color);
+        }
+    
+    
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+        }
+    
+        .button {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border: 1px solid var(--highlight-color);
+            padding: 12px 20px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+        }
+    
+        .button:hover {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+    
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--separator-color);
+            background-color: var(--tab-bg);
+        }
+    
+        .tab-button {
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            color: var(--text-color);
+            font-size: 1em;
+            cursor: pointer;
+            transition: color 0.3s, border-bottom 0.3s;
+        }
+    
+        .tab-button.active {
+            color: var(--text-color);
+            border-bottom: 4px solid var(--highlight-color);
+        }
+    
+        .tab-button:hover {
+            color: var(--secondary-color);
+        }
+    
+        .tab-content {
+            display: none;
+        }
+    
+        .tab-content.active {
+            display: block;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: var(--text-color);
+            
+            border: 1px solid var(--separator-color);
+            border-radius: 8px; /* Rounded corners for the table */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adding subtle shadow */
+        }
+    
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid var(--separator-color); /* Borders for each cell */
+            border-top: none; /* Remove top border for th and td */
+            font-size: 1.1em;
+        }
+    
+        table th {
+            color: white;
+            font-weight: bold;
+            background-color: var(--highlight-color); /* Background color for header */
+            border-top: 1px solid var(--separator-color);
+        }
+    
+    
+        table tbody tr:hover {
+            background-color: rgba(245, 5, 5, 0.1); /* Subtle hover effect */
+            cursor: pointer; /* Adding a pointer cursor on hover */
+        }
+    
+        /* Zebra Striping */
+        table tbody tr:nth-child(odd) {
+            background-color: var(--table-row-odd-bg-color); /* Alternate row color */
+        }
+    
+        table tbody tr:nth-child(even) {
+            background-color: var(--table-row-even-bg-color); /* Alternate row color */
+        }
+    
+    
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            font-size: 12px;
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+    
+            table th, table td {
+                padding: 8px;
+                font-size: 1em;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+    
+            .mobile-menu.active {
+                display: flex;
+            }
+    
+            .score {
+                font-size: 2.2em;
+                padding: 10px 37%;
+            }
+    
+            .tab-button {
+                padding: 10px;
+                font-size: 0.7em;
+            }
+            #battingTeam{
+                font-size: 0.7em;
+            }
+            #previousInning{
+                font-size: 0.7em;
+            }
+        }
+        .stats-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .stats-section h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+    
+        .stats-section select {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 5px;
+            width: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--select-border-color);
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+    
+        .stats-section select:focus {
+            outline: none;
+            border-color: var(--highlight-color);
+            box-shadow: 0 0 5px rgba(255, 87, 34, 0.5);
+        }
+    
+        .stats-section select option {
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+    
+        .stats-section select option:hover {
+            background-color: var(--highlight-color);
+            color: var(--text-color);
+        }
+    
+        .stats-section select:disabled {
+            background-color: #ddd;
+            color: #666;
+            cursor: not-allowed;
+        }
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--background-color);
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            z-index: 1000;
+        }
+
+        /* Overlay background */
+        .overlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Buttons */
+        .popup button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--highlight-color);
+            color: white;
+        }
+
+        .popup button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .strikeout, .nonstrikeout {
+            background-color: var(--highlight-color);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .strikeout.selected, .nonstrikeout.selected {
+            background-color: var(--background-color, #243b55); /* A dark, rich background for dark mode */
+            color: var(--text-color, #e6f7ff); /* Light text for contrast */
+            font-weight: bold; /* Make text bold for emphasis */
+            box-shadow: 0 0 15px rgba(51, 153, 255, 0.8), 0 0 30px rgba(51, 153, 255, 0.5); /* Strong glow effect */
+            border: 1px solid rgba(51, 153, 255, 0.8); /* Subtle border to reinforce selection */
+            
+        }
+
+        .over-tracker {
+
+            display: flex;
+            gap: 10px;
+            background-color: var(--select-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ball {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--table-row-odd-bg-color);
+            border-radius: 50%;
+            font-weight: bold;
+            color: var(--text-color);
+            border: 2px solid var(--select-border-color);
+            transition: background-color 0.3s ease;
+        }
+        
+        .ball[data-ball="1"] {
+            background-color: var(--highlight-color);
+            color: var(--button-text-color);
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <a href="/">QuickWicket</a>
+        </div>
+        <div class="nav-links">
+            <div class="theme-toggle"><span><a href="/">Home</a></span></div>
+            <div class="theme-toggle"><span><a href="/matches">Matches</a></span></div>
+            <div class="theme-toggle"><span><a href="/players">Players</a></span></div>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span>    
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            </div>
+            {% if user.is_authenticated %}
+            <button class="login-button" onclick="window.location.href='/logout';">Log Out</button>
+            {% else %}
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+            {% endif %}
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/">Home</a>
+            <a href="/matches">Matches</a>
+            <a href="/players">Players</a>
+            <a href="#" onclick="toggleTheme()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            {% if user.is_authenticated %}
+            <button class="login-button" onclick="window.location.href='/logout';">Log Out</button>
+            {% else %}
+            <button class="login-button" onclick="window.location.href='/login';">Login</button>
+            {% endif %}
+        </div>
+    </nav>
+    <!--Scorecard-->
+    <div class="scorecard">
+        <div class="match-header">
+            <h2>Live Cricket Match</h2>
+            <p>{{ team_1 }} vs {{ team_2 }}</p>
+        </div>
+        {% if batting == team_1 and innings == 1 %}
+        <div class="score-summary">
+            <span><b id="battingTeam">{{ team_1 }}</b> (Batting)</span>
+            <span><b id="previousInning">{{ team_1 }}</b>: {{t1run2}}/{{t1wkt2}}</span>
+            <span><b id="battingTeam">{{ team_2 }}</b>: {{t2run1}}/{{t2wkt1}}</span>
+            <span><b id="previousInning">{{ team_2 }}</b>: {{t2run2}}/{{t2wkt2}}</span>
+        </div>
+        <div class="score" id="score">{{t1run1}}/{{t1wkt1}}</div>
+        <p style="text-align: center;">Overs: <span id="overs">{{t1overs1}}</span> | Run Rate: <span id="runRate">0.00</span></p>
+        {% elif batting == team_1 and innings == 2%}
+        <div class="score-summary">
+            <span><b id="battingTeam">{{ team_1 }}</b> {{t1run1}}/{{t1wkt1}}</span>
+            <span><b id="previousInning">{{ team_1 }}</b>: (Batting)</span>
+            <span><b id="battingTeam">{{ team_2 }}</b>: {{t2run1}}/{{t2wkt1}}</span>
+            <span><b id="previousInning">{{ team_2 }}</b>: {{t2run2}}/{{t2wkt2}}</span>
+        </div>
+        <div class="score" id="score">{{t1run2}}/{{t1wkt2}}</div>
+        <p style="text-align: center;">Overs: <span id="overs">{{t1overs2}}</span> | Run Rate: <span id="runRate">0.00</span></p>
+        {% elif batting == team_2 and innings == 1%}
+        <div class="score-summary">
+            <span><b id="battingTeam">{{ team_1 }}</b> {{t1run1}}/{{t1wkt1}}</span>
+            <span><b id="previousInning">{{ team_1 }}</b>: {{t1run2}}/{{t1wkt2}}</span>
+            <span><b id="battingTeam">{{ team_2 }}</b>: (Batting)</span>
+            <span><b id="previousInning">{{ team_2 }}</b>: {{t2run2}}/{{t2wkt2}}</span>
+        </div>
+        <div class="score" id="score">{{t2run1}}/{{t2wkt1}}</div>
+        <p style="text-align: center;">Overs: <span id="overs">{{t2overs1}}</span> | Run Rate: <span id="runRate">0.00</span></p>
+        {% elif batting == team_2 and innings == 2%}
+        <div class="score-summary">
+            <span><b id="battingTeam">{{ team_1 }}</b> {{t1run1}}/{{t1wkt1}}</span>
+            <span><b id="previousInning">{{ team_1 }}</b>: {{t1run2}}/{{t1wkt2}}</span>
+            <span><b id="battingTeam">{{ team_2 }}</b>: {{t2run1}}/{{t2wkt1}}</span>
+            <span><b id="previousInning">{{ team_2 }}</b>: (Batting)</span>
+        </div>
+        <div class="score" id="score">{{t2run2}}/{{t2wkt2}}</div>
+        <p style="text-align: center;">Overs: <span id="overs">{{t2overs2}}</span> | Run Rate: <span id="runRate">0.00</span></p>
+        {% endif %}
+        {% if won != "" %}
+        <p style="text-align: center;font-size: 30px">{{won}} Won 🗿</p>
+        {% else %}
+        <p style="text-align: center;">🔴Live</p>
+        {% endif %}
+        <div class="over-tracker">
+        {% for ball in ball_record %}
+        <div class="ball" data-ball="1">{{ball}}</div>
+        {% endfor %}
+        <div class="ball" data-ball="2"></div>
+        </div>
+        <div class="stats-section">
+            <h3>Batsmen</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Batsman</th>
+                        <th>R</th>
+                        <th>B</th>
+                        <th>SR</th>
+                    </tr>
+                </thead>
+                {% if innings == 1 %}
+                <tbody id="batsmanStats">
+                    <tr>
+                        <td id="batsmanStrike">{{striker.name}}*</td>
+                        <td id="batsmanStrikeRuns">{{striker.runs1}}</td>
+                        <td id="batsmanStrikeBalls">{{striker.balls1}}</td>
+                        <td id="batsmanStrikeSR">0.00</td>
+                    </tr>
+                    <tr>
+                        <td id="batsmanNonStrike">{{non_striker.name}}</td>
+                        <td id="batsmanNonStrikeRuns">{{non_striker.runs1}}</td>
+                        <td id="batsmanNonStrikeBalls">{{non_striker.balls1}}</td>
+                        <td id="batsmanNonStrikeSR">0.00</td>
+                    </tr>
+                </tbody>
+                {% else %}
+                <tbody id="batsmanStats">
+                    <tr>
+                        <td id="batsmanStrike">{{striker.name}}*</td>
+                        <td id="batsmanStrikeRuns">{{striker.runs2}}</td>
+                        <td id="batsmanStrikeBalls">{{striker.balls2}}</td>
+                        <td id="batsmanStrikeSR">0.00</td>
+                    </tr>
+                    <tr>
+                        <td id="batsmanNonStrike">{{non_striker.name}}</td>
+                        <td id="batsmanNonStrikeRuns">{{non_striker.runs2}}</td>
+                        <td id="batsmanNonStrikeBalls">{{non_striker.balls2}}</td>
+                        <td id="batsmanNonStrikeSR">0.00</td>
+                    </tr>
+                </tbody>
+                {% endif %}
+            </table>
+        </div>
+
+        <div class="stats-section">
+            <h3>Bowler</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bowler</th>
+                        <th>O</th>
+                        <th>R</th>
+                        <th>W</th>
+                        <th>E</th>
+                    </tr>
+                </thead>
+                {% if innings == 1 %}
+                <tbody id="bowlerStats">
+                    <tr>
+                        <td id="currentBowler">{{bowler.name}}</td>
+                        <td id="bowlerOvers">{{bowler.overs1}}</td>
+                        <td id="bowlerBalls">{{bowler.bruns1}}</td>
+                        <td id="bowlerWickets">{{bowler.wkt1}}</td>
+                        <td id="bowlerEconomy">0.00</td>
+                    </tr>
+                </tbody>
+                {% else %}
+                <tbody id="bowlerStats">
+                    <tr>
+                        <td id="currentBowler">{{bowler.name}}</td>
+                        <td id="bowlerOvers">{{bowler.overs2}}</td>
+                        <td id="bowlerBalls">{{bowler.bruns2}}</td>
+                        <td id="bowlerWickets">{{bowler.wkt2}}</td>
+                        <td id="bowlerEconomy">0.00</td>
+                    </tr>
+                </tbody>
+                {% endif %}
+
+            </table>
+        </div>
+        <button class="button" onclick="Undo()">Undo</button>
+        <div class="buttons">
+            <button class="button" onclick="updateScore(0)">0</button>
+            <button class="button" onclick="updateScore(1)">1</button>
+            <button class="button" onclick="updateScore(2)">2</button>
+            <button class="button" onclick="updateScore(3)">3</button>
+            <button class="button" onclick="updateScore(4)">4</button>
+            <button class="button" onclick="updateScore(5)">5</button>
+            <button class="button" onclick="updateScore(6)">6</button>
+            <button class="button" onclick="wideBall()">Wide</button>
+            
+            
+            
+            <button class="button" onclick="addOut()">Out</button>
+            <button class="button" onclick="noBall(0)">NB</button>
+            <button class="button" onclick="noBall(1)">NB+1</button>
+            <button class="button" onclick="noBall(2)">NB+2</button>
+            <button class="button" onclick="noBall(3)">NB+3</button>
+            <button class="button" onclick="noBall(4)">NB+4</button>
+            <button class="button" onclick="noBall(5)">NB+5</button>
+            <button class="button" onclick="noBall(6)">NB+6</button>
+            <button class="button" onclick="runout(-1)">runout</button>
+
+            <button class="button" onclick="changeStrike()">Change Strike</button>
+            <button class="button" onclick="followon()">Follow on</button>
+
+        </div>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="popup" id="popup">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h3>Which Batsman was not fast enough?</h3>
+        <div class="strikeout">{{striker.name}}</div>
+        <div class="nonstrikeout">{{non_striker.name}}</div>
+        <button class="button" onclick="runout(0)">+0</button>
+        <button class="button" onclick="runout(1)">+1</button>
+        <button class="button" onclick="runout(2)">+2</button>
+        <button class="button" onclick="runout(3)">+3</button>
+        </div>
+        <div class="stats-section">
+            <h3>Change Players</h3>
+            {% if batting == team_1 %}
+            {% if innings == 1 %}
+            <select id="newBowlerDropdown" onchange="selectNewBowler(this.value)">
+                <option value="">Select New Bowler</option>
+                {% for player2 in t2_players %}
+                {% if player2 != bowler %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'strike')">
+                <option value="">Select Strike Batsman</option>
+                {% for player1 in t1_players %}
+                {% if player1.out1 == False and player1 != striker and player1 != non_striker %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'non-strike')">
+                <option value="">Select Non-strike Batsman</option>
+                {% for player1 in t1_players %}
+                {% if player1.out1 == False and player1 != striker and player1 != non_striker %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+           
+            {% else %}
+            <select id="newBowlerDropdown" onchange="selectNewBowler(this.value)">
+                <option value="">Select New Bowler</option>
+                {% for player2 in t2_players %}
+                {% if player2 != bowler %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'strike')">
+                <option value="">Select Strike Batsman</option>
+                {% for player1 in t1_players %}
+                {% if player1.out2 == False and player1 != striker and player1 != non_striker %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'non-strike')">
+                <option value="">Select Non-Strike Batsman</option>
+                {% for player1 in t1_players %}
+                {% if player1.out2 == False and player1 != striker and player1 != non_striker %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            {% endif %}
+            {% else %}
+            {% if innings == 1 %}
+            <select id="newBowlerDropdown" onchange="selectNewBowler(this.value)">
+                <option value="">Select New Bowler</option>
+                {% for player1 in t1_players %}
+                {% if player1 != bowler %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'strike')">
+                <option value="">Select Strike Batsman</option>
+                {% for player2 in t2_players %}
+                {% if player2.out1 == False and player2 != striker and player2 != non_striker %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'non-strike')">
+                <option value="">Select Non-strike Batsman</option>
+                {% for player2 in t2_players %}
+                {% if player2.out1 == False and player2 != striker and player2 != non_striker %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            {% else %}
+            <select id="newBowlerDropdown" onchange="selectNewBowler(this.value)">
+                <option value="">Select New Bowler</option>
+                {% for player1 in t1_players %}
+                {% if player1 != bowler %}
+                <option value={{player1.name}}>{{player1.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'strike')">
+                <option value="">Select Strike Batsman</option>
+                {% for player2 in t2_players %}
+                {% if player2.out2 == False and player2 != striker and player2 != non_striker %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            <select id="newBatsmanDropdown" onchange="selectNewBatsman(this.value,'non-strike')">
+                <option value="">Select Non-strike Batsman</option>
+                {% for player2 in t2_players %}
+                {% if player2.out2 == False and player2 != striker and player2 != non_striker %}
+                <option value={{player2.name}}>{{player2.name}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+            
+            {% endif %}
+            {% endif %}
+
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('team1-1st')">{{team_1}} 1st Inn</button>
+            <button class="tab-button" onclick="openTab('team2-1st')">{{team_2}} 1st Inn</button>
+            <button class="tab-button" onclick="openTab('team1-2nd')">{{team_1}} 2nd Inn</button>
+            <button class="tab-button" onclick="openTab('team2-2nd')">{{team_2}} 2nd Inn</button>
+        </div>
+        
+        <div id="team1-1st" class="tab-content active">
+            <div class="batting-stats">
+                <h4>Batting Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Runs</th>
+                            <th>Balls</th>
+                            <th>SR</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t1 in t1_players%}
+                        <tr>
+                            <td>{{t1.name}}</td>
+                            <td>{{t1.runs1}}</td>
+                            <td>{{t1.balls1}}</td>
+                            <td>147.06</td>
+                            {% if t1.out1 == False %}
+                            <td>Not Out</td>
+                            {% else %}
+                            <td>Out</Out>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="bowling-stats">
+                <h4>Bowling Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bowler</th>
+                            <th>Overs</th>
+                            <th>Runs</th>
+                            <th>Wkts.</th>
+                            <th>Eco.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t2 in t2_players%}
+                        <tr>
+                            <td>{{t2.name}}</td>
+                            <td>{{t2.overs1}}</td>
+                            <td>{{t2.bruns1}}</td>
+                            <td>{{t2.wkt1}}</td>
+                            <td>147.06</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="team2-1st" class="tab-content">
+            <div class="batting-stats">
+                <h4>Batting Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Runs</th>
+                            <th>Balls</th>
+                            <th>SR</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t2 in t2_players%}
+                        <tr>
+                            <td>{{t2.name}}</td>
+                            <td>{{t2.runs1}}</td>
+                            <td>{{t2.balls1}}</td>
+                            <td>147.06</td>
+                            {% if t2.out1 == False %}
+                            <td>Not Out</td>
+                            {% else %}
+                            <td>Out</Out>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="bowling-stats">
+                <h4>Bowling Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bowler</th>
+                            <th>Overs</th>
+                            <th>Runs</th>
+                            <th>Wkts.</th>
+                            <th>Eco.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t1 in t1_players%}
+                        <tr>
+                            <td>{{t1.name}}</td>
+                            <td>{{t1.overs1}}</td>
+                            <td>{{t1.bruns1}}</td>
+                            <td>{{t1.wkt1}}</td>
+                            <td>147.06</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="team1-2nd" class="tab-content">
+            <div class="batting-stats">
+                <h4>Batting Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Runs</th>
+                            <th>Balls</th>
+                            <th>SR</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t1 in t1_players%}
+                        <tr>
+                            <td>{{t1.name}}</td>
+                            <td>{{t1.runs2}}</td>
+                            <td>{{t1.balls2}}</td>
+                            <td>147.06</td>
+                            {% if t1.out2 == False %}
+                            <td>Not Out</td>
+                            {% else %}
+                            <td>Out</Out>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="bowling-stats">
+                <h4>Bowling Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bowler</th>
+                            <th>Overs</th>
+                            <th>Runs</th>
+                            <th>Wkts.</th>
+                            <th>Eco.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t2 in t2_players%}
+                        <tr>
+                            <td>{{t2.name}}</td>
+                            <td>{{t2.overs2}}</td>
+                            <td>{{t2.bruns2}}</td>
+                            <td>{{t2.wkt2}}</td>
+                            <td>147.06</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="team2-2nd" class="tab-content">
+            <div class="batting-stats">
+                <h4>Batting Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Runs</th>
+                            <th>Balls</th>
+                            <th>SR</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t2 in t2_players%}
+                        <tr>
+                            <td>{{t2.name}}</td>
+                            <td>{{t2.runs2}}</td>
+                            <td>{{t2.balls2}}</td>
+                            <td>147.06</td>
+                            {% if t2.out2 == False %}
+                            <td>Not Out</td>
+                            {% else %}
+                            <td>Out</Out>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="bowling-stats">
+                <h4>Bowling Stats</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bowler</th>
+                            <th>Overs</th>
+                            <th>Runs</th>
+                            <th>Wkts.</th>
+                            <th>Eco.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t1 in t1_players%}
+                        <tr>
+                            <td>{{t1.name}}</td>
+                            <td>{{t1.overs2}}</td>
+                            <td>{{t1.bruns2}}</td>
+                            <td>{{t1.wkt2}}</td>
+                            <td>147.06</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        &copy; 2025 QuickWicket. All rights reserved.
+        Made with <3 by Rishi
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || "dark";
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+        {% if innings == 1 %}
+        const sruns = parseFloat({{striker.runs1}});
+        const sballs = parseFloat({{striker.balls1}});
+        const nruns = parseFloat({{non_striker.runs1}});
+        const nballs = parseFloat({{non_striker.balls1}});
+        {% else %}
+        const sruns = parseFloat({{striker.runs2}});
+        const sballs = parseFloat({{striker.balls2}});
+        const nruns = parseFloat({{non_striker.runs2}});
+        const nballs = parseFloat({{non_striker.balls2}});
+        {% endif %}
+        const overss = parseFloat(document.getElementById("overs").innerText);
+        const int_overs = Math.trunc(overss);
+        const float_overs = ((overss-int_overs)*10)/6;
+        if (sballs > 0) {
+            document.getElementById("batsmanStrikeSR").innerText = ((sruns / sballs) * 100).toFixed(2);
+        } else {
+            document.getElementById("batsmanStrikeSR").innerText = "0.00";
+        }
+        if (sballs > 0) {
+            document.getElementById("batsmanNonStrikeSR").innerText = ((nruns / nballs) * 100).toFixed(2);
+        } else {
+            document.getElementById("batsmanNonStrikeSR").innerText = "0.00";
+        }
+        if(overss>0)
+        document.getElementById("runRate").innerText = ((parseFloat(document.getElementById("score").innerText.split('/')[0]))/(int_overs+float_overs)).toFixed(2);
+        else
+        document.getElementById("runRate").innerText = "0.00";
+        const balls = parseInt(document.getElementById("bowlerOvers").innerText, 10) || 0;
+        const overs = Math.floor(balls / 6) + (balls % 6) / 10;
+        document.getElementById("bowlerOvers").innerText = overs.toFixed(1);
+        document.getElementById("bowlerEconomy").innerText = (parseFloat(document.getElementById("bowlerBalls").innerText)/(balls/6)).toFixed(2);
+        async function Undo(){
+            const data = {
+                'match_id':'{{match_id}}'
+            }
+            const response = await fetch('/undo_data/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+        }
+
+        async function updateScore(runs) {
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"updateScore",
+                'runs':runs
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+            if(runs%2==1 && document.getElementById("batsmanNonStrike").innerText != ""){
+                changeStrike();
+            }
+            const overss = parseFloat(document.getElementById("overs").innerText);
+            const int_overs = Math.trunc(overss);
+            const float_overs = ((overss-int_overs)*10)/6;
+            if(overss-int_overs==0.5&& document.getElementById("batsmanNonStrike").innerText != ""){
+                changeStrike();
+            }
+            
+        }
+
+        async function addOut() {
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"updateWkt",
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+        }
+
+        async function wideBall() {
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"updateWide",
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+        }
+
+        async function noBall(runs) {
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"updateNB",
+                'runs':runs
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+            if(runs%2==1){
+                changeStrike();
+            }
+        }
+        async function changeStrike(){
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"changeStrike"
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+        }
+
+        async function followon(){
+            const data = {
+                'match_id':"{{match_id}}",
+                'action':"followon"
+            }
+            const response = await fetch('/update_game/',{
+            method: 'POST',
+            headers:{
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+            });
+            if(response.ok){
+                window.location.reload();
+            }
+            else{
+                alert("Either you are crazy or this website is lame!!");
+            }
+        }
+        async function selectNewBatsman(batsman,action) {
+            if (batsman) {
+                const data = {
+                    'match_id':"{{match_id}}",
+                    'action':action,
+                    "new_striker":batsman
+                }
+                const response = await fetch('/update_game/',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+                });
+                if(response.ok){
+                    window.location.reload();
+                }
+                else{
+                    alert("response NOT");
+                }
+            }
+        }
+
+        async function selectNewBowler(bowler) {
+            if (bowler) {
+                const data = {
+                    'match_id':"{{match_id}}",
+                    'action':"changeBowler",
+                    "new_bowler":bowler
+                }
+                const response = await fetch('/update_game/',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+                });
+                if(response.ok){
+                    window.location.reload();
+                }
+                else{
+                    alert("Either you are crazy or this website is lame!!");
+                }
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').innerText = `${score} / ${wickets}`;
+        }
+        function openTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab-button[onclick="openTab('${tabId}')"]`).classList.add('active');
+        }
+
+        function updateStatsP() {
+            // Update Batting Stats (Strike Rate)
+            document.querySelectorAll('.batting-stats tbody tr').forEach(row => {
+                const runsCell = row.children[1]; // Runs
+                const ballsCell = row.children[2]; // Balls
+                const srCell = row.children[3];   // Strike Rate
+    
+                const runs = parseInt(runsCell.textContent) || 0;
+                const balls = parseInt(ballsCell.textContent) || 0;
+    
+                if (balls > 0) {
+                    const strikeRate = ((runs / balls) * 100).toFixed(2);
+                    srCell.textContent = strikeRate;
+                } else {
+                    srCell.textContent = '0.00';
+                }
+            });
+    
+            // Update Bowling Stats (Economy)
+            document.querySelectorAll('.bowling-stats tbody tr').forEach(row => {
+                const ballsCell = row.children[1]; // Balls bowled (as overs)
+                const runsCell = row.children[2];  // Runs conceded
+                const economyCell = row.children[4]; // Economy
+    
+                const balls = parseInt(ballsCell.textContent) || 0;
+                const runs = parseInt(runsCell.textContent) || 0;
+    
+                if (balls > 0) {
+                    const economy = (runs / (balls/6)).toFixed(2);
+                    economyCell.textContent = economy;
+    
+                    // Display overs in "overs.balls" format (e.g., 2.4 for 16 balls)
+                    ballsCell.textContent = `${Math.floor(balls / 6)}.${balls % 6}`;
+                } else {
+                    economyCell.textContent = '0.00';
+                    ballsCell.textContent = '0.0';
+                }
+            });
+        }
+        function openPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        // Function to close the popup
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function runout(runs){
+            if(runs==-1){
+            openPopup();
+            }
+            else{
+                const opp = document.querySelector('.strikeout.selected');
+                let slowB = "";
+                if(opp){
+                    slowB = "striker";
+                }
+                else{
+                    slowB = "non_striker";
+                }
+                const data = {
+                    'match_id':"{{match_id}}",
+                    'action':"runout",
+                    'runs':runs,
+                    'slowB':slowB
+                }
+                fetch('/update_game/',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+                }).then(response => {
+                    if(response.ok){
+                        window.location.reload();
+                    }
+                    else{
+                        alert("Either you are crazy or this website is lame!!");
+                    }
+                });
+            }
+        }
+        document.querySelector('.strikeout').addEventListener('click', () => {
+            const opp = document.querySelector('.nonstrikeout.selected');
+            if (opp) {
+                opp.classList.remove('selected');
+            }
+            document.querySelector('.strikeout').classList.toggle('selected');
+        });
+        document.querySelector('.nonstrikeout').addEventListener('click', () => {
+            const opp = document.querySelector('.strikeout.selected');
+            if (opp) {
+                opp.classList.remove('selected');
+            }
+            document.querySelector('.nonstrikeout').classList.toggle('selected');
+        });
+
+        // Call the function to update stats
+        updateStatsP();
+    </script>
+</body>
+</html>
